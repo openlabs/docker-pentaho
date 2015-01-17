@@ -71,7 +71,7 @@ def _configure_jackrabbit():
         os.environ['PGHOST'],
         os.environ.get('PGPORT', '5432'),
     )
-    config = ET.parse('scripts/jackrabbit_repository.xml')
+    config = ET.parse('config/jackrabbit_repository.xml')
     for url_param in config.findall(".//param[@name='url']"):
         url_param.set('value', url)
     config.write(
