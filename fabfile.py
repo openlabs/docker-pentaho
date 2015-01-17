@@ -54,13 +54,13 @@ def _configure_hibernate():
         'biserver-ce/pentaho-solutions/system/hibernate/postgresql.hibernate.cfg.xml'
     )
     config = ET.parse(postgres_settings_file)
-    config.find(".//property[@name='connection.url']") = ''.join([
+    config.find(".//property[@name='connection.url']").text = ''.join([
         'jdbc:postgresql://',
         os.environ['PGHOST'] + ':' + os.environ.get('PGPORT', '5432'),
         '/hibernate'
     ])
-    config.find(".//property[@name='connection.username']") = os.environ['PGUSER']
-    config.find(".//property[@name='connection.password']") = os.environ['PGPASSWORD']
+    config.find(".//property[@name='connection.username']").text = os.environ['PGUSER']
+    config.find(".//property[@name='connection.password']").text = os.environ['PGPASSWORD']
     config.write(postgres_settings_file)
     
 def _configure_jackrabbit():
