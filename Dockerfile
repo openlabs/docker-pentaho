@@ -37,6 +37,7 @@ WORKDIR /pentaho/
 
 # Add the fabfile for the ops
 ADD data /pentaho/data
+ADD config /pentaho/config
 ADD fabfile.py /pentaho/fabfile.py
 
 ENTRYPOINT ["fab"]
