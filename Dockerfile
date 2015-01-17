@@ -4,6 +4,7 @@ MAINTAINER Sharoon Thomas
 
 ENV PENTAHO_HOME /pentaho
 RUN mkdir -p $PENTAHO_HOME
+RUN mkdir -p /downloads
 
 # Install all required dep
 RUN apt-get update
@@ -13,9 +14,11 @@ RUN apt-get install -y wget unzip git postgresql-client-9.3 zip openjdk-7-jdk py
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/jre/
 ENV PENTAHO_JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/jre/
 
+# Download the beast
+RUN wget -nv http://ufpr.dl.sourceforge.net/project/pentaho/Business%20Intelligence%20Server/5.2/biserver-ce-5.2.0.0-209.zip -O /downloads/biserver-ce.zip
 # Replace this with download from
 # http://ufpr.dl.sourceforge.net/project/pentaho/Business%20Intelligence%20Server/5.2/biserver-ce-5.2.0.0-209.zip
-ADD biserver-ce.zip /downloads/biserver-ce.zip
+# ADD biserver-ce.zip /downloads/biserver-ce.zip
 
 # Unzip the file
 RUN unzip -q /downloads/biserver-ce.zip -d  $PENTAHO_HOME
@@ -27,7 +30,7 @@ RUN rm $PENTAHO_HOME/biserver-ce/promptuser.sh
 RUN sed -i -e 's/\(exec ".*"\) start/\1 run/' $PENTAHO_HOME/biserver-ce/tomcat/bin/startup.sh
 
 # Clean up
-RUN rm /downloads/biserver-ce.zip
+RUN rm -rf /downloads
 
 # Set workdir
 WORKDIR /pentaho/
@@ -38,6 +41,3 @@ ADD fabfile.py /pentaho/fabfile.py
 
 ENTRYPOINT ["fab"]
 CMD ["run"]
-
-ENTRYPOINT ["sh"]
-CMD ["-c", "bash"]
