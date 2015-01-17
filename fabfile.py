@@ -3,6 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 from fabric.api import local
 
+
 def psql(filename, database='analytics', username=None, password=None):
     """
     Execute the given file on the database server
@@ -33,6 +34,7 @@ def initialize_databases():
     psql('data/postgresql/create_repository_postgresql.sql')
     psql('data/postgresql/create_quartz_postgresql.sql')
     psql('data/postgresql/create_quartz_postgresql2.sql', 'quartz', 'pentaho_user', 'password')
+    psql('data/postgresql/create_quartz_postgresql3.sql', 'quartz', 'pentaho_user', 'password')
 
 def _configure_hibernate():
     """
@@ -63,6 +65,7 @@ def _configure_hibernate():
     config.find(".//property[@name='connection.password']").text = os.environ['PGPASSWORD']
     config.write(postgres_settings_file)
     
+
 def _configure_jackrabbit():
     """
     configure jackrabbit to use postgres
@@ -82,6 +85,40 @@ def _configure_jackrabbit():
     )
 
 
+def _configure_tomcat():
+    """
+    Configure tomcat too
+    """
+    config_file = os.path.join(
+        os.environ['PENTAHO_HOME'],
+        'biserver-ce/tomcat/webapps/pentaho/META-INF/context.xml'
+    )
+    config = ET.parse(config_file)
+    hibernate = config.find(".//Resource[@name='jdbc/Hibernate']")
+    hibernate.set(
+        'url',
+        'jdbc:postgresql://%s:%s/hibernate' % (
+            os.environ['PGHOST'],
+            os.environ.get('PGPORT', '5432'),
+        )
+    )
+    hibernate.set('driverClassName', 'org.postgresql.Driver')
+    hibernate.set('validationQuery', 'SELECT 1')
+
+    quartz = config.find(".//Resource[@name='jdbc/Quartz']")
+    quartz.set(
+        'url',
+        'jdbc:postgresql://%s:%s/quartz' % (
+            os.environ['PGHOST'],
+            os.environ.get('PGPORT', '5432'),
+        )
+    )
+    quartz.set('driverClassName', 'org.postgresql.Driver')
+    quartz.set('validationQuery', 'SELECT 1')
+
+    config.write(config_file)
+
+
 def configure_repository():
     """
     Configure the database server on the config files
@@ -90,6 +127,8 @@ def configure_repository():
     """
     _configure_hibernate()
     _configure_jackrabbit()
+    _configure_tomcat()
+
 
 def run():
     """
