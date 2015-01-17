@@ -40,5 +40,6 @@ ADD data /pentaho/data
 ADD config /pentaho/config
 ADD fabfile.py /pentaho/fabfile.py
 
+EXPOSE 8080
 ENTRYPOINT ["fab"]
 CMD ["run"]
