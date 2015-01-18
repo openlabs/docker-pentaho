@@ -43,7 +43,7 @@ ADD fabfile.py /pentaho/fabfile.py
 # Install all the plugins
 RUN wget --no-check-certificate 'https://raw.github.com/pmalves/ctools-installer/master/ctools-installer.sh' -P / -o /dev/null
 RUN chmod +x ctools-installer.sh
-RUN ctools-installer.sh -s /pentaho/biserver-ce/pentaho-solutions -w /pentaho/biserver-ce/tomcat/webapps/pentaho -b dev -y -c marketplace,cdf,cda,cde,cgg,sparkl,saiku
+RUN ./ctools-installer.sh -s /pentaho/biserver-ce/pentaho-solutions -w /pentaho/biserver-ce/tomcat/webapps/pentaho -b dev -y -c marketplace,cdf,cda,cde,cgg,sparkl,saiku
 
 EXPOSE 8080
 ENTRYPOINT ["fab"]
